@@ -250,22 +250,7 @@
   },
   "footer": {
     "demo-app": "This is a DEMO application",
-    "demo-purpose": "used for software testing training purpose.",
-    "learn": {
-      "heading": "Learn & Explore",
-      "courses": {
-        "title": "Learn Test Automation",
-        "text": "Hands-on courses for Playwright, Robot Framework, APIs and more"
-      },
-      "spector": {
-        "title": "API Spector",
-        "text": "Open-source API testing, mocking and contract testing"
-      },
-      "github": {
-        "title": "GitHub",
-        "text": "Source code, issues and contributions"
-      }
-    }
+    "demo-purpose": "used for software testing training purpose."
   },
   "pages": {
     "overview": {
