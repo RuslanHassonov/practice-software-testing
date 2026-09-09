@@ -1,11 +1,62 @@
 <!-- Copyright (c) 2024-2026 Testsmith. All rights reserved. See LICENSE for details. -->
 
-<footer class="container-fluid text-center bg-light border-top py-2 mt-4 small" *transloco="let t">
-  <div>{{ t('footer.demo-app') }} (<a target="_blank" href="https://github.com/testsmith-io/practice-software-testing">GitHub
-    repo</a>), {{ t('footer.demo-purpose') }} | <a routerLink="privacy">Privacy Policy</a> | Banner photo
-    by <a target="_blank" href="https://unsplash.com/@barnimages">Barn Images</a> on <a target="_blank" href="https://unsplash.com/photos/t5YUoHW6zRo">Unsplash</a>.
-  </div>
-  <div class="text-muted">
-    v{{ version.version }} | Built {{ version.buildDate }} | Angular {{ angularVersion }}
+<footer class="border-top mt-4 small" *transloco="let t">
+
+  <!-- Learn & Explore: subtle pointer to the wider Testsmith ecosystem.
+       Production only (see FooterComponent.isProduction). -->
+  @if (isProduction) {
+    <div class="ptt-explore bg-body-tertiary border-bottom py-3" data-test="footer-explore">
+      <div class="container">
+        <div class="ptt-explore-heading text-uppercase text-muted fw-semibold mb-2 text-center text-md-start">
+          {{ t('footer.learn.heading') }}
+        </div>
+        <div class="row g-3">
+          <div class="col-12 col-md-4">
+            <a class="ptt-explore-link d-flex align-items-start gap-2"
+               href="https://onlinecourses.testsmith.io" target="_blank" rel="noopener"
+               data-test="footer-learn-courses">
+              <fa-icon [icon]="faGraduationCap" class="ptt-explore-icon text-secondary" aria-hidden="true"></fa-icon>
+              <span>
+                <span class="ptt-explore-title d-block text-body fw-semibold">{{ t('footer.learn.courses.title') }}</span>
+                <span class="text-muted">{{ t('footer.learn.courses.text') }}</span>
+              </span>
+            </a>
+          </div>
+          <div class="col-12 col-md-4">
+            <a class="ptt-explore-link d-flex align-items-start gap-2"
+               href="https://api-spector.com" target="_blank" rel="noopener"
+               data-test="footer-learn-spector">
+              <fa-icon [icon]="faFlaskVial" class="ptt-explore-icon text-secondary" aria-hidden="true"></fa-icon>
+              <span>
+                <span class="ptt-explore-title d-block text-body fw-semibold">{{ t('footer.learn.spector.title') }}</span>
+                <span class="text-muted">{{ t('footer.learn.spector.text') }}</span>
+              </span>
+            </a>
+          </div>
+          <div class="col-12 col-md-4">
+            <a class="ptt-explore-link d-flex align-items-start gap-2"
+               href="https://github.com/testsmith-io/practice-software-testing" target="_blank" rel="noopener"
+               data-test="footer-learn-github">
+              <fa-icon [icon]="faCode" class="ptt-explore-icon text-secondary" aria-hidden="true"></fa-icon>
+              <span>
+                <span class="ptt-explore-title d-block text-body fw-semibold">{{ t('footer.learn.github.title') }}</span>
+                <span class="text-muted">{{ t('footer.learn.github.text') }}</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Existing informational / legal footer (unchanged content). -->
+  <div class="container-fluid text-center bg-light py-2">
+    <div>{{ t('footer.demo-app') }} (<a target="_blank" href="https://github.com/testsmith-io/practice-software-testing">GitHub
+      repo</a>), {{ t('footer.demo-purpose') }} | <a routerLink="privacy">Privacy Policy</a> | Banner photo
+      by <a target="_blank" href="https://unsplash.com/@barnimages">Barn Images</a> on <a target="_blank" href="https://unsplash.com/photos/t5YUoHW6zRo">Unsplash</a>.
+    </div>
+    <div class="text-muted">
+      v{{ version.version }} | Built {{ version.buildDate }} | Angular {{ angularVersion }}
+    </div>
   </div>
 </footer>
