@@ -18,12 +18,12 @@ export interface User {
     password: string;
 }
 
-export function buildUser(overrides: Partial<User> = {}): User {
+export function buildUserData(overrides: Partial<User> = {}): User {
     return {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         dob: faker.date.birthdate({ min: 18, max: 75, mode: 'age' }).toISOString().split('T')[0],
-        country: faker.location.country(),
+        country: faker.location.countryCode(),
         postalCode: faker.location.zipCode(),
         houseNumber: faker.location.buildingNumber(),
         street: faker.location.street(),

@@ -1,6 +1,4 @@
-import { Page } from '@playwright/test';
-
-import { buildUser } from '../helpers/data';
+import { Page, expect } from '@playwright/test';
 
 export class RegisterPage {
     readonly page: Page;
@@ -41,5 +39,10 @@ export class RegisterPage {
         await this.page.locator('[data-test="password"]').fill(password);
 
         await this.page.click('[data-test="register-submit"]');
+    }
+
+    async verifyErrorMessage(locator: string, message: RegExp) {
+        await expect(this.page.locator(locator)).toBeVisible();
+        await expect(this.page.locator(locator)).toContainText(message);
     }
 }
