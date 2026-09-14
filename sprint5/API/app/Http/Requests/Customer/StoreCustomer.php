@@ -40,9 +40,8 @@ class StoreCustomer extends BaseFormRequest
      */
     public function rules(): array
     {
-        $dt = new Carbon();
-        $before = $dt->subYears(18)->format('Y-m-d');
-        $after = $dt->subYears(75)->format('Y-m-d');
+        $before = (new Carbon())->subYears(18)->format('Y-m-d');
+        $after = (new Carbon())->subYears(75)->format('Y-m-d');
 
         return [
             'first_name' => ['required', 'string', 'max:40', new SubscriptSuperscriptRule()],
