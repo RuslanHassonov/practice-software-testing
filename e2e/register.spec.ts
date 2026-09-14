@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { RegisterPage } from './pages/RegisterPage';
-import { buildUserData } from './helpers/data';
+import { buildUserData, dateOfBirthForAge } from './helpers/data';
 
 test('should display customer registration header', async ({ page }) => {
   const registerPage = new RegisterPage(page);
@@ -18,20 +18,7 @@ test.describe('Valid Registration', () => {
 
     await registerPage.goto();
 
-    await registerPage.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await registerPage.registerUser(data);
 
     // Should navigate to login page after successful registration
     await expect(page).toHaveTitle(/Login - Practice Software Testing - Toolshop - v5.0/);
@@ -46,45 +33,20 @@ test.describe('Invalid Registration', () => {
     await page.goto('http://localhost:4200/auth/register');
   });
 
+  // Current API implementation excludes users who are exactly 18 or 75 years old, see StoreCustomer.php
   test('should not register user under 18 years old', async () => {
-    const data = buildUserData({ dob: '2025-01-01' }); // User under 18 years old
+    const data = buildUserData({ dob: dateOfBirthForAge(18, 1) }); // One day younger than 18
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect an error message indicating the user is underage
     await register.verifyErrorMessage('[data-test="register-error"]', /Customer must be 18 years old\./);
   });
 
   test('should not register user over 75 years old', async () => {
-    const data = buildUserData({ dob: '1901-01-01' }); // User over 75 years old
+    const data = buildUserData({ dob: dateOfBirthForAge(75, -1) }); // One day older than 75
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect an error message indicating the user is over 75 years old
     await register.verifyErrorMessage('[data-test="register-error"]', /Customer must be younger than 75 years old\./);
@@ -93,20 +55,7 @@ test.describe('Invalid Registration', () => {
   test('should invalidate incorrect date of birth format', async () => {
     const data = buildUserData({ dob: '01-01-1990' }); // Incorrect date format (should be YYYY-MM-DD)
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect an error message indicating invalid date format
     await register.verifyErrorMessage('[data-test="dob-error"]', /Please enter a valid date in YYYY-MM-DD format\./);
@@ -115,20 +64,7 @@ test.describe('Invalid Registration', () => {
   test('should invalidate empty required fields', async () => {
     const data = buildUserData({ firstName: '', lastName: '', phone: '' }); // Empty fields
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect messages indicating required fields
     await register.verifyErrorMessage('[data-test="first-name-error"]', /First name is required/);
@@ -139,20 +75,7 @@ test.describe('Invalid Registration', () => {
   test('should invalidate first name if longer than 40 characters', async () => {
     const data = buildUserData({ firstName: 'A'.repeat(41) }); // First name longer than 40 characters
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect messages indicating required fields
     await register.verifyErrorMessage('[data-test="register-error"]', /The first name field must not be greater than 40 characters./);
@@ -161,20 +84,7 @@ test.describe('Invalid Registration', () => {
   test('should invalidate last name if longer than 20 characters', async () => {
     const data = buildUserData({ lastName: 'A'.repeat(21) }); // Last name longer than 20 characters
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect messages indicating required fields
     await register.verifyErrorMessage('[data-test="register-error"]', /The last name field must not be greater than 20 characters./);
@@ -185,20 +95,7 @@ test.describe('Invalid Registration', () => {
   test('should invalidate incorrect email format', async () => {
     const data = buildUserData({ email: 'invalid-email' }); // Invalid email format
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect message indicating email format is invalid
     await register.verifyErrorMessage('[data-test="email-error"]', /Email format is invalid/);
@@ -207,42 +104,16 @@ test.describe('Invalid Registration', () => {
   test('should invalidate email if it already exists', async () => {
     const data = buildUserData({ email: 'customer@practicesoftwaretesting.com' }); // Email that already exists
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect message indicating a customer with this email address already exists
-    await register.verifyErrorMessage('[data-test="email-error"]', /A customer with this email address already exists./);
+    await register.verifyErrorMessage('[data-test="register-error"]', /A customer with this email address already exists./);
   });
 
   test('should invalidate incorrect phone format', async () => {
     const data = buildUserData({ phone: '123-123123123' }); // Invalid phone format, contains dashes
 
-    await register.registerUser(
-      data.firstName,
-      data.lastName,
-      data.dob,
-      data.country,
-      data.postalCode,
-      data.houseNumber,
-      data.street,
-      data.city,
-      data.state,
-      data.phone,
-      data.email,
-      data.password
-    );
+    await register.registerUser(data);
 
     // Expect message indicating phone format is invalid
     await register.verifyErrorMessage('[data-test="phone-error"]', /Only numbers are allowed./);
