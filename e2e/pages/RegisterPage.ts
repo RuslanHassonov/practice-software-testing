@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import type { User } from '../helpers/data';
+import type { User } from '../helpers/UserData';
 
 export class RegisterPage {
     readonly page: Page;

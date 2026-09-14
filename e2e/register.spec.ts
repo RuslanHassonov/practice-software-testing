@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { RegisterPage } from './pages/RegisterPage';
-import { buildUserData, dateOfBirthForAge } from './helpers/data';
+import { buildUserData, dateOfBirthForAge } from './helpers/UserData';
 
 test('should display customer registration header', async ({ page }) => {
   const registerPage = new RegisterPage(page);
