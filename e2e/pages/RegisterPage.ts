@@ -9,22 +9,53 @@ export class RegisterPage {
     }
 
     async goto() {
-        await this.page.goto('http://localhost:4200/auth/register');
+        await this.page.goto('/auth/register');
     }
 
+    readonly locators = {
+        firstName: '[data-test="first-name"]',
+        lastName: '[data-test="last-name"]',
+        dob: '[data-test="dob"]',
+        country: '[data-test="country"]',
+        postalCode: '[data-test="postal_code"]',
+        houseNumber: '[data-test="house_number"]',
+        street: '[data-test="street"]',
+        city: '[data-test="city"]',
+        state: '[data-test="state"]',
+        phone: '[data-test="phone"]',
+        email: '[data-test="email"]',
+        password: '[data-test="password"]'
+    };
+
+    readonly errorLocators = {
+        firstNameError: '[data-test="first-name-error"]',
+        lastNameError: '[data-test="last-name-error"]',
+        dobError: '[data-test="dob-error"]',
+        countryError: '[data-test="country-error"]',
+        postalCodeError: '[data-test="postal_code-error"]',
+        houseNumberError: '[data-test="house_number-error"]',
+        streetError: '[data-test="street-error"]',
+        cityError: '[data-test="city-error"]',
+        stateError: '[data-test="state-error"]',
+        phoneError: '[data-test="phone-error"]',
+        emailError: '[data-test="email-error"]',
+        passwordError: '[data-test="password-error"]',
+        registerError: '[data-test="register-error"]'
+    };
+
     async registerUser(data: User) {
-        await this.page.locator('[data-test="first-name"]').fill(data.firstName);
-        await this.page.locator('[data-test="last-name"]').fill(data.lastName);
-        await this.page.locator('[data-test="dob"]').fill(data.dob);
-        await this.page.locator('[data-test="country"]').selectOption(data.country);
-        await this.page.locator('[data-test="postal_code"]').fill(data.postalCode);
-        await this.page.locator('[data-test="house_number"]').fill(data.houseNumber);
-        await this.page.locator('[data-test="street"]').fill(data.street);
-        await this.page.locator('[data-test="city"]').fill(data.city);
-        await this.page.locator('[data-test="state"]').fill(data.state);
-        await this.page.locator('[data-test="phone"]').fill(data.phone);
-        await this.page.locator('[data-test="email"]').fill(data.email);
-        await this.page.locator('[data-test="password"]').fill(data.password);
+        await this.page.locator(this.locators.firstName).fill(data.firstName);
+        await this.page.locator(this.locators.lastName).fill(data.lastName);
+        await this.page.locator(this.locators.dob).fill(data.dob);
+        await this.page.locator(this.locators.country).selectOption(data.country);
+        await this.page.locator(this.locators.postalCode).fill(data.postalCode);
+        await this.page.locator(this.locators.houseNumber).fill(data.houseNumber);
+        await this.page.locator(this.locators.street).fill(data.street);
+        await this.page.locator(this.locators.city).fill(data.city);
+        await this.page.locator(this.locators.state).fill(data.state);
+        await this.page.locator(this.locators.phone).fill(data.phone);
+        await this.page.locator(this.locators.email).fill(data.email);
+        await this.page.locator(this.locators.password).fill(data.password);
 
         await this.page.click('[data-test="register-submit"]');
     }
