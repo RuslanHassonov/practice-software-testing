@@ -12,3 +12,6 @@ _docker/coverage/php/tools/composer.lock
 mutation.html
 stryker.log
 settings.local.json
+
+# Playwright
+/playwright/.auth/
