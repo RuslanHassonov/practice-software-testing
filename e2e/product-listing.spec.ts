@@ -64,7 +64,8 @@ test.describe('Product listing', () => {
 		expect(Math.max(...prices) - Math.min(...prices)).toBeLessThanOrEqual(100);
 	});
 
-	test('handles an invalid category without showing products', async ({ page }) => {
+	// Directly testing the API response for an invalid category, since the UI does not provide a way to select an invalid category
+	test('returns no products for an invalid category', async ({ page }) => {
 		const listing = new ProductListingPage(page);
 		const data = buildProductData();
 		await listing.goto();
@@ -78,11 +79,14 @@ test.describe('Product listing', () => {
 		await listing.goto();
 		const initialCount = await page.locator(listing.locators.products).count();
 		const category = await page.locator(listing.locators.categories).first().getAttribute('value');
+		const initialNames = await listing.visibleProductNames();
 		await listing.selectCategory(category!);
 		await listing.resetFilters();
+		const restoredNames = await listing.visibleProductNames();
 
 		await expect(page.locator(`${listing.locators.categories}:checked`)).toHaveCount(0);
 		await expect(page.locator(`${listing.locators.brands}:checked`)).toHaveCount(0);
 		expect(await page.locator(listing.locators.products).count()).toBe(initialCount);
+		expect(restoredNames).toEqual(initialNames);
 	});
 });

@@ -14,8 +14,8 @@ export type ProductResponse = {
 
 export class ProductListingPage {
 	readonly page: Page;
-	private productsUrl = '';
-	lastQuery: Record<string, string> = {};
+	private productsUrl = ''; 				// API endpoint for products, captured from the initial response
+	lastQuery: Record<string, string> = {}; // Stores the last query parameters sent to the products API
 
 	constructor(page: Page) {
 		this.page = page;
@@ -35,16 +35,17 @@ export class ProductListingPage {
 	};
 
 	async goto() {
-		// Wait for the initial product response before navigating to the page
-		const responsePromise = this.productResponse();
-		await this.page.goto('/');
+		const responsePromise = this.productResponsePromise();
+		await this.page.goto('');
 		const response = await responsePromise;
 		this.productsUrl = response.url();
-		await this.waitForProducts();
+		await this.waitForProductsToLoad();
 		return response.json() as Promise<ProductResponse>;
 	}
 
-	async waitForProducts() {
+	// Wait for meaningful page state - either products, or 'no results' message 
+	// Cannot use fixed timemout, because app may load faster or slower
+	async waitForProductsToLoad() {
 		await this.page.locator(`${this.locators.products}, ${this.locators.noResults}`).first().waitFor();
 	}
 
@@ -57,19 +58,19 @@ export class ProductListingPage {
 	}
 
 	async selectCheckbox(selector: string): Promise<ProductResponse> {
-		const responsePromise = this.productResponse();
+		const responsePromise = this.productResponsePromise();
 		await this.page.locator(selector).check();
 		return this.responseBody(await responsePromise);
 	}
 
 	async sortBy(value: 'name,asc' | 'name,desc' | 'price,asc' | 'price,desc'): Promise<ProductResponse> {
-		const responsePromise = this.productResponse();
+		const responsePromise = this.productResponsePromise();
 		await this.page.locator(this.locators.sort).selectOption(value);
 		return this.responseBody(await responsePromise);
 	}
 
 	async setPriceRange(minSteps: number, maxSteps: number): Promise<ProductResponse> {
-		const responsePromise = this.productResponse();
+		const responsePromise = this.productResponsePromise();
 		for (let index = 0; index < minSteps; index += 1) {
 			await this.page.locator(this.locators.minPriceHandle).press('ArrowRight');
 		}
@@ -80,11 +81,12 @@ export class ProductListingPage {
 	}
 
 	async resetFilters(): Promise<ProductResponse> {
-		const responsePromise = this.productResponse();
+		const responsePromise = this.productResponsePromise();
 		await this.page.locator(this.locators.resetSearch).click();
 		return this.responseBody(await responsePromise);
 	}
-
+	
+	// Sends a QUERY request to the products API with the specified criteria and returns the parsed JSON response
 	async queryProducts(criteria: Record<string, string>) {
 		const response = await this.page.request.fetch(this.productsUrl, {
 			method: 'QUERY',
@@ -93,16 +95,19 @@ export class ProductListingPage {
 		return response.json() as Promise<ProductResponse>;
 	}
 
+	// Returns an array of product names currently visible on the page, trimmed and lowercased
 	async visibleProductNames() {
 		return this.page.locator(this.locators.productNames).allTextContents();
 	}
 
+	// Returns an array of product prices currently visible on the page, parsed as numbers
 	async visibleProductPrices() {
 		const prices = await this.page.locator(this.locators.productPrices).allTextContents();
 		return prices.map((price) => Number.parseFloat(price.replace('$', '').trim()));
 	}
 
-	private productResponse() {
+	// Waits for the next product API response and captures the query parameters sent to the API
+	private productResponsePromise() {
 		return this.page.waitForResponse((response: Response) => {
 			if (response.request().method() === 'QUERY' && response.url().includes('/products')) {
 				this.lastQuery = response.request().postDataJSON() as Record<string, string>;
@@ -112,8 +117,9 @@ export class ProductListingPage {
 		});
 	}
 
+	// Waits for the next product API response, UI to load the products, and returns the parsed JSON body
 	private async responseBody(response: Response) {
-		await this.waitForProducts();
+		await this.waitForProductsToLoad();
 		return response.json() as Promise<ProductResponse>;
 	}
 }
